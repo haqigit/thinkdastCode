@@ -18,18 +18,20 @@ import org.jsoup.select.Elements;
 public class WikiNodeExample {
 
 	public static void main(String[] args) throws IOException {
-		String url = "https://www.baidu.com";
+		System.setProperty("proxyHost", "127.0.0.1");
+		System.setProperty("proxyPort", "1080");
+		String url = "https://en.wikipedia.org/wiki/Java_(programming_language)";
 
 		// download and parse the document
 		Connection conn = Jsoup.connect(url);
-		Document doc = conn.get();
+		Document doc = conn.userAgent("Chrome").get();
 
 		// select the content text and pull out the paragraphs.
-		Element content = doc.getElementById("wrapper");
+		Element content = doc.getElementById("mw-content-text");
 
 		// TODO: avoid selecting paragraphs from sidebars and boxouts
-		Elements paras = content.select("div");
-		Element firstPara = paras.get(0);
+		Elements paras = content.select("p");
+		Element firstPara = paras.get(1);
 
 		recursiveDFS(firstPara);
 		System.out.println();
@@ -37,8 +39,8 @@ public class WikiNodeExample {
 		iterativeDFS(firstPara);
 		System.out.println();
 
-		Iterable<Node> iter = new WikiNodeIterable(firstPara);
-		for (Node node : iter) {
+		Iterable<Node> iter1 = new WikiNodeIterable(firstPara);
+		for (Node node : iter1) {
 			if (node instanceof TextNode) {
 				System.out.print(node);
 			}
